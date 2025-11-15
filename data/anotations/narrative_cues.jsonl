@@ -1,0 +1,10 @@
+{"id": "ex_001", "text": "He walked towards the house, his mind blank. I step closer now, feeling the fear rise.", "labels": ["NARRATOR_SHIFT", "TENSE_SHIFT", "EMOTION_SHIFT"]}
+{"id": "ex_002", "text": "I was running through the forest yesterday. I run faster now, my heart pounding in my chest.", "labels": ["TENSE_SHIFT", "EMOTION_SHIFT"]}
+{"id": "ex_003", "text": "He was sitting in the library, quietly turning the pages of the book.", "labels": []}
+{"id": "ex_004", "text": "Therefore, the results of this experiment can be considered conclusive. Yeah, I mean, it was pretty obvious anyway.", "labels": ["REGISTER_SHIFT"]}
+{"id": "ex_005", "text": "I watch the sun fade behind the hills. I watched it disappear yesterday too, but somehow tonight feels heavier.", "labels": ["TENSE_SHIFT", "EMOTION_SHIFT"]}
+{"id": "ex_006", "text": "She walks down the corridor. She walks quickly, focused, without any emotion.", "labels": []}
+{"id": "ex_007", "text": "He was sure of his decision. Suddenly, I feel doubt crawling under my skin.", "labels": ["NARRATOR_SHIFT", "TENSE_SHIFT", "EMOTION_SHIFT"]}
+{"id": "ex_008", "text": "We concluded that the hypothesis was incorrect. Dude, that was totally unexpected.", "labels": ["REGISTER_SHIFT"]}
+{"id": "ex_009", "text": "They were arguing in the kitchen, but their voices stayed calm and controlled.", "labels": []}
+{"id": "ex_010", "text": "I stare at the empty chair. Fear slowly rises as I wait for someone to sit there.", "labels": ["EMOTION_SHIFT"]}
