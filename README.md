@@ -1,2 +1,2 @@
 # Narrative-Style-Transfer
-Creating a model to detect and interpret Narrative Style Transfer-related cues using both traditional and neural NLP techniques.
+The purpose of the project is to build an AI system that automatically detects changes in the writing style of a narrative text.
