@@ -13,10 +13,12 @@ def preprocess_texts(texts: list[str]) -> list[dict]:
     Returns a list of dicts with tokens / lemmas / pos.
     """
     records = []
+    additional_records_saving = []
     for doc in nlp.pipe(texts, batch_size=32):
         tokens = [t.text for t in doc]
         lemmas = [t.lemma_ for t in doc]
         pos = [t.pos_ for t in doc]
+        additional_records_saving.append({"text": doc.text})
         records.append(
             {
                 "text": doc.text,
