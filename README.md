@@ -53,3 +53,20 @@ Dataset-i është ndërtuar nga **10 vepra letrare klasike** të marra nga [Proj
 | **Numri i atributeve (features)** | 8 karakteristika numerike |
 | **Etiketat (labels)** | 4 lloje ndryshimesh + 1 binary (has_transfer) |
 | **Formati i ruajtjes** | JSONL (JSON Lines) |
+
+### Atributet e Nxjerra (Features)
+
+Për secilin segment teksti, nxirren këto karakteristika:
+
+| Nr. | Feature | Përshkrimi |
+|-----|---------|------------|
+| 1 | `fp_ratio` | Raporti i përemrave vetë e parë (I, we, me, us, my, our) |
+| 2 | `tp_ratio` | Raporti i përemrave vetë e tretë (he, she, they, him, her, them) |
+| 3 | `verb_ratio` | Raporti i foljeve në segment |
+| 4 | `neg_ratio` | Raporti i fjalëve me konotacion negativ emocional |
+| 5 | `formal_ratio` | Raporti i fjalëve formale (therefore, however, moreover) |
+| 6 | `informal_ratio` | Raporti i fjalëve joformale (gonna, wanna, kinda) |
+| 7 | `avg_token_len` | Gjatësia mesatare e token-ave |
+| 8 | `length` | Numri total i token-ave në segment |
+
+---
