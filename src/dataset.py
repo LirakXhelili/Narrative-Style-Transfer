@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas
 from .config import LABELS
 
-def load_josnl(path: str | Path) -> pandas.DataFrame:
+def load_jsonl(path: str | Path) -> pandas.DataFrame:
     path = Path(path)
     data = []
     with path.open("r",encoding="utf-8") as f:
@@ -25,6 +25,6 @@ def load_josnl(path: str | Path) -> pandas.DataFrame:
     return dataframe
 
 if __name__ == "__main__":
-    dataframe = load_josnl("data/anotations/narrative_cues.jsonl")
+    dataframe = load_jsonl("data/anotations/narrative_cues.jsonl")
     print(dataframe.head())
     print(dataframe[["id","labels","has_transfer"]])
