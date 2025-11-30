@@ -1,10 +1,8 @@
-numpy
 pandas
+numpy
 scikit-learn
 spacy
-torch
+joblib
 transformers
-datasets
+torch
 tqdm
-matplotlib
-seaborn
