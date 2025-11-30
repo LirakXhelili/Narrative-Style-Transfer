@@ -43,7 +43,7 @@ def preprocess_dataset(input_path: str, output_path: str):
 
 if __name__ == "__main__":
     preprocess_dataset(
-        "data/annotations/candidate_segments_labeled.jsonl",
+        "data/annotations/narrative_cues.jsonl",
         "data/processed/narrative_cues.pkl",
     )
 
