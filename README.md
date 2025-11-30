@@ -253,3 +253,76 @@ training_args = TrainingArguments(
 | `max_length` | 256 | Mjaftueshëm për 3 fjali, eficient në memorie |
 
 ---
+
+
+##  Instalimi dhe Përdorimi
+
+### Kërkesat
+
+```bash
+# Krijoni dhe aktivizoni mjedisin virtual
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# ose
+venv\Scripts\activate     # Windows
+
+# Instaloni varësitë
+pip install -r requirements.txt
+
+# Shkarkoni modelin spaCy
+python -m spacy download en_core_web_sm
+```
+
+### Ekzekutimi i Pipeline-it
+
+```bash
+# 1. Segmentimi i teksteve
+python -m src.make_segments
+
+# 2. Etiketimi automatik
+python -m src.auto_label
+
+# 3. Përpunimi me spaCy
+python -m src.preprocess
+
+# 4. Trajnimi i modelit tradicional
+python -m src.train_traditional
+
+# 5. Trajnimi i modelit transformer
+python -m src.train_transformer
+
+# 6. Inspektimi i modelit tradicional
+python -m src.inspect_traditional
+```
+
+---
+
+##  Varësitë (Dependencies)
+
+| Librari | Versioni | Përdorimi |
+|---------|----------|-----------|
+| pandas | latest | Manipulimi i të dhënave |
+| numpy | latest | Operacione numerike |
+| scikit-learn | latest | Modeli tradicional ML |
+| spacy | latest | Përpunimi gjuhësor |
+| transformers | latest | Modeli DistilBERT |
+| torch | latest | Backend për transformers |
+| joblib | latest | Ruajtja e modeleve |
+| tqdm | latest | Progress bars |
+
+---
+
+## Referencat
+
+1. Devlin, J., et al. (2019). "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding."
+2. Sanh, V., et al. (2019). "DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter."
+3. Project Gutenberg. https://www.gutenberg.org/
+4. spaCy Documentation. https://spacy.io/
+
+---
+
+##  Licenca
+
+Ky projekt është zhvilluar për qëllime akademike në kuadër të lëndës NLP.
+
+---
