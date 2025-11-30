@@ -90,3 +90,30 @@ Për secilin segment teksti, nxirren këto karakteristika:
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
+### Struktura e Skedarëve
+
+```
+Narrative-Style-Transfer/
+├── data/
+│   ├── raw/                      # Tekstet origjinale (.txt)
+│   ├── annotations/              # Dataset-i (JSONL)
+│   │   ├── candidate_segments.jsonl
+│   │   ├── candidate_segments_labeled.jsonl
+│   │   └── narrative_cues.jsonl
+│   └── processed/                # Të dhëna të përpunuara (.pkl)
+│       └── narrative_cues.pkl
+├── models/                       # Modelet e trajnuara
+│   └── traditional_logreg.joblib
+├── src/
+│   ├── config.py                 # Konfigurimet dhe konstantet
+│   ├── dataset.py                # Ngarkimi i dataset-it
+│   ├── features.py               # Nxjerrja e features
+│   ├── make_segments.py          # Segmentimi i teksteve
+│   ├── auto_label.py             # Etiketimi automatik
+│   ├── preprocess.py             # Përpunimi me spaCy
+│   ├── train_traditional.py      # Trajnimi i Logistic Regression
+│   ├── train_transformer.py      # Trajnimi i DistilBERT
+│   └── inspect_traditional.py    # Analiza e peshave të modelit
+├── requirements.txt
+└── README.md
+```
