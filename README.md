@@ -52,11 +52,8 @@ Dataset-i është ndërtuar nga **10 vepra letrare klasike** të marra nga [Proj
 | **Madhësia totale e të dhënave të papërpunuara** | ~6.2 MB |
 | **Numri i atributeve (features)** | 8 karakteristika numerike |
 | **Etiketat (labels)** | 4 lloje ndryshimesh + 1 binary (has_transfer) |
-| **Formati i ruajtjes** | JSONL (JSON Lines) |
 
 ### Atributet e Nxjerra (Features)
-
-Për secilin segment teksti, nxirren këto karakteristika:
 
 | Nr. | Feature | Përshkrimi |
 |-----|---------|------------|
@@ -90,6 +87,7 @@ Për secilin segment teksti, nxirren këto karakteristika:
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
 ### Struktura e Skedarëve
 
 ```
@@ -98,7 +96,6 @@ Narrative-Style-Transfer/
 │   ├── raw/                      # Tekstet origjinale (.txt)
 │   ├── annotations/              # Dataset-i (JSONL)
 │   │   ├── candidate_segments.jsonl
-│   │   ├── candidate_segments_labeled.jsonl
 │   │   └── narrative_cues.jsonl
 │   └── processed/                # Të dhëna të përpunuara (.pkl)
 │       └── narrative_cues.pkl
@@ -133,8 +130,6 @@ for i in range(0, len(sentences), chunk_size):
     segment_text = " ".join(chunk_sents)
 ```
 
-**Arsyetimi:** Zgjedhja e 3 fjalive si madhësi segmenti balancon nevojën për kontekst të mjaftueshëm (për të detektuar ndryshime stili) dhe shmangien e segmenteve tepër të gjata që mund të përmbajnë shumë ndryshime të ndryshme.
-
 #### 1.2 Etiketimi Automatik (Auto-Labeling)
 
 Për të krijuar një dataset fillestar, është përdorur një sistem etiketimi automatik me rregulla heuristike:
@@ -150,12 +145,6 @@ Për të krijuar një dataset fillestar, është përdorur një sistem etiketimi
 
 #### 1.3 Përpunimi Gjuhësor (NLP Preprocessing)
 
-Për çdo segment, nxirren informacione gjuhësore duke përdorur spaCy:
-
-- **Tokenization**: Ndarja në fjalë/shenja individuale
-- **Lemmatization**: Reduktimi i fjalëve në formën bazë
-- **POS Tagging**: Identifikimi i pjesëve të ligjëratës
-
 ```python
 # Nga preprocess.py
 nlp = spacy.load("en_core_web_sm", disable=["parser", "ner"])
@@ -167,49 +156,11 @@ for doc in nlp.pipe(texts, batch_size=32):
 
 ---
 
-### 2. Nxjerrja e Karakteristikave (Feature Engineering)
+### 2. Trajnimi i Modeleve
 
-Për secilin segment, llogariten 8 karakteristika numerike që kapin aspekte të ndryshme të stilit:
-
-```python
-# Nga features.py
-return numpy.array([
-    fp_ratio,        # Raporti vetë e parë
-    tp_ratio,        # Raporti vetë e tretë
-    verb_ratio,      # Raporti i foljeve
-    neg_ratio,       # Raporti i fjalëve negative
-    formal_ratio,    # Raporti i fjalëve formale
-    informal_ratio,  # Raporti i fjalëve joformale
-    avg_token_len,   # Gjatësia mesatare e fjalëve
-    length,          # Numri i fjalëve
-], dtype=float)
-```
-
-**Arsyetimi i Zgjedhjes së Features:**
-
-| Feature | Arsyetimi |
-|---------|-----------|
-| `fp_ratio` / `tp_ratio` | Detektojnë ndryshimin e perspektivës së tregimtarit |
-| `verb_ratio` | Tregon densitetin e veprimeve në tekst |
-| `neg_ratio` | Kap tonin emocional të tekstit |
-| `formal_ratio` / `informal_ratio` | Identifikojnë ndryshimin e regjistrit |
-| `avg_token_len` | Fjalët më të gjata shpesh tregojnë stil më formal |
-| `length` | Kontrollon për efektin e gjatësisë së segmentit |
-
----
-
-### 3. Trajnimi i Modeleve
-
-#### 3.1 Model Tradicional: Logistic Regression
-
-**Arsyetimi i Zgjedhjes:** Logistic Regression është zgjedhur si baseline për disa arsye:
-- Interpretueshmëri e lartë (mund të shohim peshat e secilit feature)
-- Trajnim i shpejtë
-- Performancë e mirë për probleme binare
-- Rezistencë ndaj overfitting me dataset të vogël
+#### 2.1 Model Tradicional: Logistic Regression
 
 ```python
-# Nga train_traditional.py
 clf = LogisticRegression(max_iter=1000)
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.3, random_state=42, stratify=y
@@ -217,20 +168,9 @@ X_train, X_test, y_train, y_test = train_test_split(
 clf.fit(X_train, y_train)
 ```
 
-**Parametrat:**
-- `max_iter=1000`: Numri maksimal i iteracioneve për konvergjencë
-- `test_size=0.3`: 70% trajnim, 30% testim
-- `stratify=y`: Ruajtja e proporcionit të klasave në ndarje
-
-#### 3.2 Model Transformer: DistilBERT
-
-**Arsyetimi i Zgjedhjes:** DistilBERT ofron:
-- Kuptim të thellë kontekstual të tekstit
-- Performancë të ngjashme me BERT por 40% më të shpejtë
-- Aftësi për të kapur nuanca stilistike që feature engineering nuk i identifikon
+#### 2.2 Model Transformer: DistilBERT
 
 ```python
-# Nga train_transformer.py
 MODEL_NAME = "distilbert-base-uncased"
 MAX_LENGTH = 256
 
@@ -243,7 +183,6 @@ training_args = TrainingArguments(
 )
 ```
 
-**Parametrat dhe Arsyetimi:**
 | Parametër | Vlera | Arsyetimi |
 |-----------|-------|-----------|
 | `num_train_epochs` | 3 | Balancon trajnimin e mjaftueshëm pa overfitting |
@@ -254,6 +193,73 @@ training_args = TrainingArguments(
 
 ---
 
+##  Rezultatet
+
+### Performanca e Modelit DistilBERT
+
+#### Raporti i Klasifikimit
+
+| Klasa | Precision | Recall | F1-Score | Support |
+|-------|-----------|--------|----------|---------|
+| **NO_TRANSFER (0)** | 0.960 | 0.954 | 0.957 | 2,255 |
+| **HAS_TRANSFER (1)** | 0.972 | 0.976 | 0.974 | 3,653 |
+
+#### Metrikat e Përgjithshme
+
+| Metrikë | Vlera |
+|---------|-------|
+| **Accuracy** | **96.7%** |
+| **Macro Avg Precision** | 0.966 |
+| **Macro Avg Recall** | 0.965 |
+| **Macro Avg F1-Score** | 0.965 |
+| **Weighted Avg F1-Score** | 0.967 |
+
+### Statistikat e Trajnimit
+
+| Metrikë | Vlera |
+|---------|-------|
+| **Koha e trajnimit** | 20 minuta 39 sekonda |
+| **Samples/sekondë** | 33.36 |
+| **Hapa totale** | 5,172 |
+| **Loss fillestar** | 0.593 |
+| **Loss përfundimtar** | 0.047 |
+| **Train Loss mesatar** | 0.163 |
+
+### Grafiku i Loss gjatë Trajnimit
+
+```
+Loss
+0.60 ┤╮
+0.50 ┤╰╮
+0.40 ┤ ╰╮
+0.30 ┤  ╰╮
+0.20 ┤   ╰──╮
+0.10 ┤      ╰────────────────────
+0.05 ┤                          ╰──
+     └────────────────────────────────
+     0.0   0.5   1.0   1.5   2.0   2.5   3.0  Epoch
+```
+
+### Analiza e Rezultateve
+
+####  Pikat e Forta:
+- **Accuracy 96.7%** - Performancë e shkëlqyer në detektimin e ndryshimeve stilistike
+- **F1-Score 0.974** për klasën HAS_TRANSFER - Model i besueshëm për identifikimin e ndryshimeve
+- **Recall i lartë (97.6%)** - Modeli identifikon shumicën e rasteve me ndryshim stili
+- **Loss i ulët (0.047)** - Konvergjencë e suksesshme pa overfitting
+
+####  Kufizimet:
+- Etiketimi automatik mund të ketë gabime
+- Dataset-i përmban vetëm tekste nga epoka Viktoriane
+- Disa lloje ndryshimesh janë më të vështira për t'u detektuar
+
+####  Punë e Ardhshme:
+- Zgjerimi i dataset-it me tekste moderne
+- Etiketimi manual i një nën-bashkësie për validim
+- Eksperimentimi me modele të tjera (RoBERTa, BERT-large)
+- Klasifikimi multi-label për llojin specifik të ndryshimit
+
+---
 
 ##  Instalimi dhe Përdorimi
 
@@ -299,20 +305,20 @@ python -m src.inspect_traditional
 
 ##  Varësitë (Dependencies)
 
-| Librari | Versioni | Përdorimi |
-|---------|----------|-----------|
-| pandas | latest | Manipulimi i të dhënave |
-| numpy | latest | Operacione numerike |
-| scikit-learn | latest | Modeli tradicional ML |
-| spacy | latest | Përpunimi gjuhësor |
-| transformers | latest | Modeli DistilBERT |
-| torch | latest | Backend për transformers |
-| joblib | latest | Ruajtja e modeleve |
-| tqdm | latest | Progress bars |
+| Librari | Përdorimi |
+|---------|-----------|
+| pandas | Manipulimi i të dhënave |
+| numpy | Operacione numerike |
+| scikit-learn | Modeli tradicional ML |
+| spacy | Përpunimi gjuhësor |
+| transformers | Modeli DistilBERT |
+| torch | Backend për transformers |
+| joblib | Ruajtja e modeleve |
+| tqdm | Progress bars |
 
 ---
 
-## Referencat
+##  Referencat
 
 1. Devlin, J., et al. (2019). "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding."
 2. Sanh, V., et al. (2019). "DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter."
