@@ -117,3 +117,139 @@ Narrative-Style-Transfer/
 ├── requirements.txt
 └── README.md
 ```
+## Metodologjia
+
+### 1. Përgatitja e të Dhënave
+
+#### 1.1 Segmentimi i Teksteve
+
+Tekstet e papërpunuara ndahen në segmente duke përdorur spaCy për sentence tokenization. Çdo segment përmban **3 fjali të njëpasnjëshme**, duke krijuar kontekst të mjaftueshëm për detektimin e ndryshimeve stilistike.
+
+```python
+# Nga make_segments.py
+chunk_size = 3
+for i in range(0, len(sentences), chunk_size):
+    chunk_sents = sentences[i:i + chunk_size]
+    segment_text = " ".join(chunk_sents)
+```
+
+**Arsyetimi:** Zgjedhja e 3 fjalive si madhësi segmenti balancon nevojën për kontekst të mjaftueshëm (për të detektuar ndryshime stili) dhe shmangien e segmenteve tepër të gjata që mund të përmbajnë shumë ndryshime të ndryshme.
+
+#### 1.2 Etiketimi Automatik (Auto-Labeling)
+
+Për të krijuar një dataset fillestar, është përdorur një sistem etiketimi automatik me rregulla heuristike:
+
+| Lloji | Rregulla Heuristike |
+|-------|---------------------|
+| **NARRATOR_SHIFT** | Prania e përemrave vetë e parë DHE vetë e tretë në të njëjtin segment |
+| **TENSE_SHIFT** | Prania e foljeve në kohë të ndryshme (e shkuar + e tashme ose e shkuar + e ardhme) |
+| **REGISTER_SHIFT** | Prania e fjalëve formale DHE joformale në të njëjtin segment |
+| **EMOTION_SHIFT** | Prania e fjalëve me emocione pozitive DHE negative, ose fjala negative + "but" |
+
+**Arsyetimi:** Etiketimi automatik me heuristikë lejon krijimin e shpejtë të një dataset-i trajnimi. Megjithëse jo perfekt, këto etiketa sigurojnë një pikënisje solide që mund të përmirësohet me etiketim manual.
+
+#### 1.3 Përpunimi Gjuhësor (NLP Preprocessing)
+
+Për çdo segment, nxirren informacione gjuhësore duke përdorur spaCy:
+
+- **Tokenization**: Ndarja në fjalë/shenja individuale
+- **Lemmatization**: Reduktimi i fjalëve në formën bazë
+- **POS Tagging**: Identifikimi i pjesëve të ligjëratës
+
+```python
+# Nga preprocess.py
+nlp = spacy.load("en_core_web_sm", disable=["parser", "ner"])
+for doc in nlp.pipe(texts, batch_size=32):
+    tokens = [t.text for t in doc]
+    lemmas = [t.lemma_ for t in doc]
+    pos = [t.pos_ for t in doc]
+```
+
+---
+
+### 2. Nxjerrja e Karakteristikave (Feature Engineering)
+
+Për secilin segment, llogariten 8 karakteristika numerike që kapin aspekte të ndryshme të stilit:
+
+```python
+# Nga features.py
+return numpy.array([
+    fp_ratio,        # Raporti vetë e parë
+    tp_ratio,        # Raporti vetë e tretë
+    verb_ratio,      # Raporti i foljeve
+    neg_ratio,       # Raporti i fjalëve negative
+    formal_ratio,    # Raporti i fjalëve formale
+    informal_ratio,  # Raporti i fjalëve joformale
+    avg_token_len,   # Gjatësia mesatare e fjalëve
+    length,          # Numri i fjalëve
+], dtype=float)
+```
+
+**Arsyetimi i Zgjedhjes së Features:**
+
+| Feature | Arsyetimi |
+|---------|-----------|
+| `fp_ratio` / `tp_ratio` | Detektojnë ndryshimin e perspektivës së tregimtarit |
+| `verb_ratio` | Tregon densitetin e veprimeve në tekst |
+| `neg_ratio` | Kap tonin emocional të tekstit |
+| `formal_ratio` / `informal_ratio` | Identifikojnë ndryshimin e regjistrit |
+| `avg_token_len` | Fjalët më të gjata shpesh tregojnë stil më formal |
+| `length` | Kontrollon për efektin e gjatësisë së segmentit |
+
+---
+
+### 3. Trajnimi i Modeleve
+
+#### 3.1 Model Tradicional: Logistic Regression
+
+**Arsyetimi i Zgjedhjes:** Logistic Regression është zgjedhur si baseline për disa arsye:
+- Interpretueshmëri e lartë (mund të shohim peshat e secilit feature)
+- Trajnim i shpejtë
+- Performancë e mirë për probleme binare
+- Rezistencë ndaj overfitting me dataset të vogël
+
+```python
+# Nga train_traditional.py
+clf = LogisticRegression(max_iter=1000)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42, stratify=y
+)
+clf.fit(X_train, y_train)
+```
+
+**Parametrat:**
+- `max_iter=1000`: Numri maksimal i iteracioneve për konvergjencë
+- `test_size=0.3`: 70% trajnim, 30% testim
+- `stratify=y`: Ruajtja e proporcionit të klasave në ndarje
+
+#### 3.2 Model Transformer: DistilBERT
+
+**Arsyetimi i Zgjedhjes:** DistilBERT ofron:
+- Kuptim të thellë kontekstual të tekstit
+- Performancë të ngjashme me BERT por 40% më të shpejtë
+- Aftësi për të kapur nuanca stilistike që feature engineering nuk i identifikon
+
+```python
+# Nga train_transformer.py
+MODEL_NAME = "distilbert-base-uncased"
+MAX_LENGTH = 256
+
+training_args = TrainingArguments(
+    num_train_epochs=3,
+    per_device_train_batch_size=8,
+    learning_rate=5e-5,
+    weight_decay=0.01,
+    metric_for_best_model="f1",
+)
+```
+
+**Parametrat dhe Arsyetimi:**
+| Parametër | Vlera | Arsyetimi |
+|-----------|-------|-----------|
+| `num_train_epochs` | 3 | Balancon trajnimin e mjaftueshëm pa overfitting |
+| `batch_size` | 8 | Madhësi e arsyeshme për memorie GPU |
+| `learning_rate` | 5e-5 | Vlera standarde për fine-tuning të transformerëve |
+| `weight_decay` | 0.01 | Regularizim për të parandaluar overfitting |
+| `max_length` | 256 | Mjaftueshëm për 3 fjali, eficient në memorie |
+
+---
