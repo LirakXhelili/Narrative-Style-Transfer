@@ -2,20 +2,24 @@
 
 
 
-**Lënda: Procesimi i gjuhës natyrale
+**Lënda**: Procesimi i gjuhës natyrale
 
-**Profesori i lëndës: Mërgim Hoti
+**Profesori i lëndës**: Mërgim Hoti
 
-**Studimet: Master - Semestri III
+**Studimet**: Master - Semestri III
 
-**Universititeti : Universiteti i Prishtinës - " Hasan Prishtina "
+**Universititeti** : Universiteti i Prishtinës - " Hasan Prishtina "
 
 <img src="https://github.com/user-attachments/assets/9002855f-3f97-4b41-a180-85d1e24ad34a" alt="University Logo" width="110" align="right"/>
 
-Fakulteti: Fakulteti i Inxhinierisë Elektrike dhe Kompjuterike - FIEK
+**Fakulteti**: Fakulteti i Inxhinierisë Elektrike dhe Kompjuterike - FIEK
 
-Drejtimi : Inxhinieri Kompjuterike dhe Softuerike - IKS
+**Drejtimi** : Inxhinieri Kompjuterike dhe Softuerike - IKS
 
+## Anëtarët e grupit
+**Blerta Krasniqi**
+**Lirak Xhelili**
+**Zana Guda**
 ##  Përshkrimi i Projektit
 
 Qëllimi i këtij projekti është ndërtimi i një sistemi AI që automatikisht **detekton ndryshimet e stilit të shkrimit** në tekstet narrative. Sistemi identifikon katër lloje të ndryshimeve stilistike:
