@@ -1,14 +1,20 @@
 ## Detektimi Automatik i Ndryshimeve të Stilit në Tekstet Narrative
 
-## University of Prishtina
+
+
+**Lënda: Procesimi i gjuhës natyrale
+
+**Profesori i lëndës: Mërgim Hoti
+
+**Studimet: Master - Semestri III
+
+**Universititeti : Universiteti i Prishtinës - " Hasan Prishtina "
+
 <img src="https://github.com/user-attachments/assets/9002855f-3f97-4b41-a180-85d1e24ad34a" alt="University Logo" width="110" align="right"/>
 
-**Fakulteti i Inxhinierise Elektrike dhe Kompjuterike (FIEK)**  
-**Program:** Computer and Software Engineering - Master  
-**Course:** Procesimi i gjuhëve natyrale 
+Fakulteti: Fakulteti i Inxhinierisë Elektrike dhe Kompjuterike - FIEK
 
-## Course Professor
-**Prof. Dr. Mërgim Hoti**
+Drejtimi : Inxhinieri Kompjuterike dhe Softuerike - IKS
 
 ##  Përshkrimi i Projektit
 
