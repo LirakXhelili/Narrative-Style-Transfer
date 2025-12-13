@@ -17,9 +17,9 @@
 **Drejtimi** : Inxhinieri Kompjuterike dhe Softuerike - IKS
 
 ## Anëtarët e grupit
-**Blerta Krasniqi**
-**Lirak Xhelili**
-**Zana Guda**
+Blerta Krasniqi
+Lirak Xhelili
+Zana Guda
 ##  Përshkrimi i Projektit
 
 Qëllimi i këtij projekti është ndërtimi i një sistemi AI që automatikisht **detekton ndryshimet e stilit të shkrimit** në tekstet narrative. Sistemi identifikon katër lloje të ndryshimeve stilistike:
